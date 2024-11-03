@@ -5,16 +5,18 @@ from fastapi.templating import Jinja2Templates
 from moviepy.editor import VideoFileClip
 import os
 import shutil
+import tempfile
+from pathlib import Path
+import logging
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 app = FastAPI()
 
 # Mount static files and templates
 app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
-
-# Create uploads and downloads directories if they don't exist
-os.makedirs("uploads", exist_ok=True)
-os.makedirs("downloads", exist_ok=True)
 
 @app.get("/", response_class=HTMLResponse)
 async def home(request: Request):
@@ -23,28 +25,31 @@ async def home(request: Request):
 @app.post("/convert")
 async def convert_file(file: UploadFile = File(...)):
     try:
-        # Save uploaded file
-        file_path = f"uploads/{file.filename}"
-        with open(file_path, "wb") as buffer:
-            shutil.copyfileobj(file.file, buffer)
+        logger.info(f"Starting conversion of {file.filename}")
+        # Create temporary directory
+        with tempfile.TemporaryDirectory() as temp_dir:
+            # Create paths for temporary files
+            temp_input = Path(temp_dir) / f"input_{file.filename}"
+            temp_output = Path(temp_dir) / f"output_{file.filename.replace('.mp4', '.mp3')}"
 
-        # Convert to MP3
-        output_path = f"downloads/{os.path.splitext(file.filename)[0]}.mp3"
-        video = VideoFileClip(file_path)
-        video.audio.write_audiofile(output_path)
-        video.close()
+            # Save uploaded file
+            with open(temp_input, "wb") as buffer:
+                shutil.copyfileobj(file.file, buffer)
 
-        # Clean up uploaded file
-        os.remove(file_path)
+            # Convert to MP3
+            video = VideoFileClip(str(temp_input))
+            video.audio.write_audiofile(str(temp_output))
+            video.close()
 
-        # Return the converted file
-        return FileResponse(
-            output_path,
-            media_type="audio/mpeg",
-            filename=os.path.basename(output_path)
-        )
+            # Return the converted file
+            return FileResponse(
+                str(temp_output),
+                media_type="audio/mpeg",
+                filename=temp_output.name
+            )
 
     except Exception as e:
+        logger.error(f"Error during conversion: {str(e)}")
         return {"error": str(e)}
 
 # Clean up function to remove old files

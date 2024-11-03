@@ -1,5 +1,6 @@
-fastapi
-uvicorn
+ffmpeg-python
 python-multipart
 moviepy
+fastapi
+uvicorn
 jinja2
