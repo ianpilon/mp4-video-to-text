@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MP4 to MP3 Converter</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>MP4 to MP3 Converter</h1>
+        <div class="upload-container">
+            <form id="uploadForm">
+                <input type="file" id="fileInput" accept=".mp4" required>
+                <button type="submit">Convert to MP3</button>
+            </form>
+            <div id="status" class="status"></div>
+            <div class="progress-container">
+                <div id="progress-bar" class="progress-bar"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('uploadForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const fileInput = document.getElementById('fileInput');
+            const status = document.getElementById('status');
+            const progressBar = document.getElementById('progress-bar');
+
+            if (!fileInput.files.length) {
+                status.textContent = 'Please select a file';
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('file', fileInput.files[0]);
+
+            status.textContent = 'Converting...';
+            progressBar.style.width = '50%';
+
+            try {
+                const response = await fetch('/convert', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!response.ok) throw new Error('Conversion failed');
+
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = fileInput.files[0].name.replace('.mp4', '.mp3');
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(url);
+
+                status.textContent = 'Conversion successful!';
+                progressBar.style.width = '100%';
+            } catch (error) {
+                status.textContent = `Error: ${error.message}`;
+                progressBar.style.width = '0%';
+            }
+        });
+    </script>
+</body>
+</html>

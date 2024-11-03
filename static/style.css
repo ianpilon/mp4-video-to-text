@@ -1,0 +1,64 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 20px;
+    background-color: #f0f2f5;
+}
+
+.container {
+    max-width: 600px;
+    margin: 0 auto;
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+    text-align: center;
+    color: #1a73e8;
+}
+
+.upload-container {
+    margin-top: 20px;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+button {
+    background-color: #1a73e8;
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+button:hover {
+    background-color: #1557b0;
+}
+
+.status {
+    margin-top: 10px;
+    text-align: center;
+    color: #666;
+}
+
+.progress-container {
+    margin-top: 20px;
+    background-color: #f0f2f5;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.progress-bar {
+    width: 0;
+    height: 4px;
+    background-color: #1a73e8;
+    transition: width 0.3s ease;
+}
