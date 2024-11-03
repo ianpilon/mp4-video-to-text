@@ -15,4 +15,4 @@ A simple GUI application built with Python and Tkinter that converts MP4 video f
    ```
 
 ## Usage
-Run the application:
+Run the application: python3 mp4_to_mp3.py
