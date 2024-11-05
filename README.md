@@ -11,8 +11,11 @@ A simple GUI application built with Python and Tkinter that converts MP4 video f
 1. Clone this repository
 2. Install required packages:
    ```bash
-   pip install moviepy
+   pip3 install moviepy
    ```
 
 ## Usage
-Run the application: python3 mp4_to_mp3.py
+Run the application: 
+```bash
+python3 mp4_to_mp3.py
+```
